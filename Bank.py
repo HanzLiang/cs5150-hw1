@@ -4,8 +4,9 @@ from derecho.cascade.client import ServiceClientAPI
 
 
 class Bank:
+    capi = ServiceClientAPI()
     transaction = defaultdict(dict)
-    account = dict()
+    account = capi.create_object_pool("/vcss_objects","VolatileCascadeStoreWithStringKey",0)
 
     def getAccount(self, bank_account_id):
         return self.account[bank_account_id]
