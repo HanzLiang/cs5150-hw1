@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ../derecho.cascade.client import ServiceClientAPI
+from derecho.cascade.client import ServiceClientAPI
 
 class bcolors:
     OK = '\033[92m' #GREEN
