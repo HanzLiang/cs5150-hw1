@@ -252,17 +252,25 @@ class Bank:
     # parameter:
     # bank_account_id: the account id to generate dashboard
     def dashboard(self, bank_account_id):
-        if bank_account_id not in self.account:
-            return False
-        month=self.getMonth()
-        print("current balance:",self.account[bank_account_id].balance)
-        print(self.transaction[bank_account_id][month])
+        res = self.capi.get('/transaction/{}'.format(bank_account_id))
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
+
+        print(odict)
+        transaction=json.loads(odict['value'].decode())
+        print(transaction[self.getMonth()])
 
     # Audit generates a report for the entire bank, with a dashboard record for every customer.
     def audit(self):
-        audit_result=sorted(self.transaction.items(),key=lambda x:self.account[x[0]].owner_name,reverse=False)
-        for item in audit_result:
-            print(item)
+        res=self.capi.get_members('/transaction/')
+        print(res)
+        # audit_result=sorted(self.transaction.items(),key=lambda x:self.account[x[0]].owner_name,reverse=False)
+        # for item in audit_result:
+        #     print(item)
         
 
 class bankAccount:
@@ -288,5 +296,9 @@ class bankAccount:
 B=Bank()
 res=B.new_account('111213','lhz','text_id_blanc','contact_info_blank','overdraft_limit','overdraft_intrRate',100)
 res=B.new_account('111220','lhw','text_id_blanc','contact_info_blank','overdraft_limit','overdraft_intrRate',100)
-B.transfer('111213', '111220',100)
+B.transfer('111213', '111220',10)
+B.withdraw('111213', '111220',10)
+B.deposit('111220',10)
+B.deposit('111220',10)
+B.dashboard('111213')
 
