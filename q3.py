@@ -74,6 +74,8 @@ class Bank:
         else:
             print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
         
+        res = self.capi.put('/transaction/{}'.format(self.getTime()),bytes(bank_account_id+" deposit "+ str(money) +" in "+self.getTime(),'utf-8'),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+
         # month=self.getMonth()
         # if month not in self.transaction[bank_account_id]:
         #     self.transaction[bank_account_id][month] = []        

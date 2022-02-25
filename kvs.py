@@ -16,6 +16,7 @@ if __name__ == '__main__':
 
     print("2) Create a folder, a.k.a object pool in the first VolatileCascadeStore subgroup.")
     res = capi.create_object_pool("/pcss_objects","PersistentCascadeStoreWithStringKey",0)
+    res = capi.create_object_pool("/pcss_objects/newpcss","PersistentCascadeStoreWithStringKey",0)
     if res:
         ver = res.get_result()
         print(bcolors.OK + f"folder '/pcss_objects' is created with version:{ver}" + bcolors.RESET)
