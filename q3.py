@@ -43,7 +43,7 @@ class Bank:
                 'overdraft_intrRate': overdraft_intrRate,
                 'balance': balance}     
 
-        res = self.capi.put('/account/{bank_account_id}',json.dumps(new_account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        res = self.capi.put('/account/{}'.format(bank_account_id),json.dumps(new_account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
         if res:
             ver = res.get_result()
             print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
@@ -60,14 +60,14 @@ class Bank:
             return False
         # if bank_account_id not in self.account:
         #     return False
-        res = self.capi.get('/account/{bank_account_id}')
+        res = self.capi.get('/account/{}'.format(bank_account_id))
         odict = res.get_result()
         print(odict)
         account = json.loads(odict['value'].decode())
         account['balance']+= money
         print(account)
 
-        res = self.capi.put('/account/{bank_account_id}',json.dumps(account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        res = self.capi.put('/account/{}'.format(bank_account_id),json.dumps(account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
         if res:
             ver = res.get_result()
             print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
