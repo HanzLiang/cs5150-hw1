@@ -15,10 +15,6 @@ class Bank:
     transaction = capi.create_object_pool("/transaction","VolatileCascadeStoreWithStringKey",0)
     account = capi.create_object_pool("/account","VolatileCascadeStoreWithStringKey",0)
 
-    def getAccount(self, bank_account_id):
-        res = self.capi.get('/account/obj_001')
-        return self.account[bank_account_id]
-
     def getTime(self):
         localtime = time.asctime(time.localtime(time.time()))
         return localtime
@@ -50,6 +46,14 @@ class Bank:
         else:
             print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
 
+        transaction={self.getMonth:[]}
+        res = self.capi.put('/transaction/{}'.format(bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
+
 
     # Deposit puts money into an account.
     # parameter:
@@ -74,7 +78,13 @@ class Bank:
         else:
             print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
         
-        res = self.capi.put('/transaction/{}'.format(self.getTime()),bytes(bank_account_id+" deposit "+ str(money) +" in "+self.getTime(),'utf-8'),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        res = self.capi.get('/transaction/{}'.format(self.bank_account_id))
+        odict = res.get_result()
+        print(odict)
+        transaction=json.loads(odict['value'].decode())
+        transaction[self.getMonth].append(bank_account_id+" deposit "+ str(money) +" in "+self.getTime())
+        print(transaction)
+        res = self.capi.put('/transaction/{}'.format(self.bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
 
         # month=self.getMonth()
         # if month not in self.transaction[bank_account_id]:
