@@ -58,8 +58,8 @@ class Bank:
     def deposit(self, bank_account_id, money):
         if money < 0:
             return False
-        if bank_account_id not in self.account:
-            return False
+        # if bank_account_id not in self.account:
+        #     return False
         res = self.capi.get('/pcss_objects/{bank_account_id}')
         odict = res.get_result()
         print(odict)
