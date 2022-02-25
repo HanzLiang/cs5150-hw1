@@ -62,10 +62,15 @@ class Bank:
     def deposit(self, bank_account_id, money):
         if money < 0:
             return False
-        # if bank_account_id not in self.account:
-        #     return False
+        
         res = self.capi.get('/account/{}'.format(bank_account_id))
-        odict = res.get_result()
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
+
         print(odict)
         account = json.loads(odict['value'].decode())
         account['balance']+= money
@@ -79,48 +84,41 @@ class Bank:
             print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
         
         res = self.capi.get('/transaction/{}'.format(bank_account_id))
-        odict = res.get_result()
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
+
         print(odict)
         transaction=json.loads(odict['value'].decode())
         transaction[self.getMonth()].append(bank_account_id+" deposit "+ str(money) +" in "+self.getTime())
         print(transaction)
+        
         res = self.capi.put('/transaction/{}'.format(bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
-
-        # month=self.getMonth()
-        # if month not in self.transaction[bank_account_id]:
-        #     self.transaction[bank_account_id][month] = []        
-        # self.transaction[bank_account_id][month].append(bank_account_id+" deposit "+str(money)+" in "+self.getTime())
-
-        return True
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
 
     # Withdraw takes money out
     # parameter:
     # bank_account_id: the account id
     # money: amount of money to withdraw
     def withdraw(self, bank_account_id, money):
-        # if money < 0:
-        #     return False
-        # if bank_account_id not in self.account:
-        #     return False
-        # account = self.account[bank_account_id]
-        # if account.balance >= money:
-        #     account.balance -= money
-            
-        #     month=self.getMonth()
-        #     if month not in self.transaction[bank_account_id]:
-        #         self.transaction[bank_account_id][month] = []       
-        #     self.transaction[bank_account_id][month].append(bank_account_id+" withdraw "+str(money)+" in "+self.getTime())
-            
-        #     return True
-
-        # else:
-        #     return False
-
         if money < 0:
             return False
-
+        
         res = self.capi.get('/account/{}'.format(bank_account_id))
-        odict = res.get_result()
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
+
         print(odict)
         account = json.loads(odict['value'].decode())
         account['balance']-= money
@@ -134,13 +132,24 @@ class Bank:
             print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
         
         res = self.capi.get('/transaction/{}'.format(bank_account_id))
-        odict = res.get_result()
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
+
         print(odict)
         transaction=json.loads(odict['value'].decode())
         transaction[self.getMonth()].append(bank_account_id+" withdraw "+ str(money) +" in "+self.getTime())
         print(transaction)
+        
         res = self.capi.put('/transaction/{}'.format(bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
-
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
 
 
 
@@ -152,29 +161,91 @@ class Bank:
     def transfer(self, fromaccount_id, toaccount_id, money):
         if money < 0:
             return False
-        if fromaccount_id not in self.account or toaccount_id not in self.account:
-            return False
         
-        fromaccount = self.account[fromaccount_id]
-        if fromaccount.balance >= money:
-            fromaccount.balance -= money
-            toaccount = self.account[toaccount_id]
-            toaccount.balance += money
-
-            month=self.getMonth()
-            if month not in self.transaction[fromaccount_id]:
-                self.transaction[fromaccount_id][month] = []       
-            self.transaction[fromaccount_id][month].append(fromaccount_id+" transfer "+str(money)+" to "+toaccount_id+" in "+self.getTime())
-
-            if month not in self.transaction[toaccount_id]:
-                self.transaction[toaccount_id][month] = []       
-            self.transaction[toaccount_id][month].append(fromaccount_id+" transfer "+str(money)+" to "+toaccount_id+" in "+self.getTime())
-
-
-            return True
+        res = self.capi.get('/account/{}'.format(fromaccount_id))
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
         else:
-            return False
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
 
+        print(odict)
+        account = json.loads(odict['value'].decode())
+        account['balance']-= money
+        print(account)
+
+        res = self.capi.put('/account/{}'.format(fromaccount_id),json.dumps(account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
+
+
+
+        res = self.capi.get('/account/{}'.format(toaccount_id))
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
+
+        print(odict)
+        account = json.loads(odict['value'].decode())
+        account['balance']+= money
+        print(account)
+
+        res = self.capi.put('/account/{}'.format(toaccount_id),json.dumps(account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
+
+
+        
+        res = self.capi.get('/transaction/{}'.format(fromaccount_id))
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
+
+        print(odict)
+        transaction=json.loads(odict['value'].decode())
+        transaction[self.getMonth()].append(fromaccount_id+" transfer "+ str(money) +" to " + toaccount_id +" in "+self.getTime())
+        print(transaction)
+        
+        res = self.capi.put('/transaction/{}'.format(fromaccount_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
+
+
+        res = self.capi.get('/transaction/{}'.format(toaccount_id))
+        if res:
+            odict = res.get_result()
+            print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
+            quit()
+
+        print(odict)
+        transaction=json.loads(odict['value'].decode())
+        transaction[self.getMonth()].append(fromaccount_id+" transfer "+ str(money) +" to " + toaccount_id +" in "+self.getTime())
+        print(transaction)
+        
+        res = self.capi.put('/transaction/{}'.format(toaccount_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
             
     
     # Dashboard generates a report showing the customer’s current bank balance and the transactions for the current month.
@@ -216,5 +287,6 @@ class bankAccount:
 
 B=Bank()
 res=B.new_account('111213','lhz','text_id_blanc','contact_info_blank','overdraft_limit','overdraft_intrRate',100)
-B.withdraw('111213',100)
+res=B.new_account('111220','lhw','text_id_blanc','contact_info_blank','overdraft_limit','overdraft_intrRate',100)
+B.transfer('111213', '111220',100)
 
