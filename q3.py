@@ -266,7 +266,7 @@ class Bank:
 
     # Audit generates a report for the entire bank, with a dashboard record for every customer.
     def audit(self):
-        res=self.capi.get_members('/transaction/')
+        res=self.capi.get_object_pool('/transaction/')
         print(res)
         # audit_result=sorted(self.transaction.items(),key=lambda x:self.account[x[0]].owner_name,reverse=False)
         # for item in audit_result:
