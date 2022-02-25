@@ -41,7 +41,7 @@ class Bank:
                 'contact_info': contact_info,
                 'overdraft_limit': overdraft_limit,
                 'overdraft_intrRate': overdraft_intrRate,
-                'balance': str(balance)}     
+                'balance': balance}     
 
         res = self.capi.put('/account/{bank_account_id}',json.dumps(new_account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
         if res:
@@ -60,14 +60,24 @@ class Bank:
             return False
         if bank_account_id not in self.account:
             return False
+        res = self.capi.get('/pcss_objects/{bank_account_id}')
+        odict = res.get_result()
+        print(odict)
+        account = json.loads(odict['value'].decode())
+        account['balance']+= money
+        print(account)
+
+        res = self.capi.put('/account/{bank_account_id}',json.dumps(account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
         
-        account = self.account[bank_account_id]
-        account.balance += money
-        
-        month=self.getMonth()
-        if month not in self.transaction[bank_account_id]:
-            self.transaction[bank_account_id][month] = []        
-        self.transaction[bank_account_id][month].append(bank_account_id+" deposit "+str(money)+" in "+self.getTime())
+        # month=self.getMonth()
+        # if month not in self.transaction[bank_account_id]:
+        #     self.transaction[bank_account_id][month] = []        
+        # self.transaction[bank_account_id][month].append(bank_account_id+" deposit "+str(money)+" in "+self.getTime())
 
         return True
 
@@ -164,4 +174,5 @@ class bankAccount:
 
 B=Bank()
 res=B.new_account('111213','lhz','text_id_blanc','contact_info_blank','overdraft_limit','overdraft_intrRate',100)
+B.deposit('111213',100)
 
