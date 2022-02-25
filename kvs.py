@@ -29,7 +29,7 @@ if __name__ == '__main__':
     print(bcolors.OK + f"{res}" + bcolors.RESET)
 
     print("4) Put an object with key '/vcss_objects/obj_001'")
-    res = capi.put('/pcss_objects/obj_001',bytes('value of /vcss_objects/obj_001','utf-8'),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+    res = capi.put('/pcss_objects/newpcss/obj_001',bytes('value of /vcss_objects/obj_001','utf-8'),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
     if res:
         ver = res.get_result()
         print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
         quit()
 
     print("5) Get an object with key '/vcss_objects/obj_001'")
-    res = capi.get('/pcss_objects/obj_001')
+    res = capi.get('/pcss_objects/newpcss/obj_001')
     if res:
         odict = res.get_result()
         print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
