@@ -60,7 +60,7 @@ class Bank:
             return False
         # if bank_account_id not in self.account:
         #     return False
-        res = self.capi.get('/pcss_objects/{bank_account_id}')
+        res = self.capi.get('/account/{bank_account_id}')
         odict = res.get_result()
         print(odict)
         account = json.loads(odict['value'].decode())
