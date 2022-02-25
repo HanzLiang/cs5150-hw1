@@ -133,13 +133,13 @@ class Bank:
         else:
             print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
         
-        # res = self.capi.get('/transaction/{}'.format(bank_account_id))
-        # odict = res.get_result()
-        # print(odict)
-        # transaction=json.loads(odict['value'].decode())
-        # transaction[self.getMonth()].append(bank_account_id+" withdraw "+ str(money) +" in "+self.getTime())
-        # print(transaction)
-        # res = self.capi.put('/transaction/{}'.format(bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        res = self.capi.get('/transaction/{}'.format(bank_account_id))
+        odict = res.get_result()
+        print(odict)
+        transaction=json.loads(odict['value'].decode())
+        transaction[self.getMonth()].append(bank_account_id+" withdraw "+ str(money) +" in "+self.getTime())
+        print(transaction)
+        res = self.capi.put('/transaction/{}'.format(bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
 
 
 
