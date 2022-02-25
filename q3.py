@@ -78,7 +78,7 @@ class Bank:
         else:
             print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
         
-        res = self.capi.get('/transaction/{}'.format(self.bank_account_id))
+        res = self.capi.get('/transaction/{}'.format(bank_account_id))
         odict = res.get_result()
         print(odict)
         transaction=json.loads(odict['value'].decode())
