@@ -301,4 +301,4 @@ B.withdraw('111213',10)
 B.deposit('111220',10)
 B.deposit('111220',10)
 B.dashboard('111213')
-
+B.audit()
