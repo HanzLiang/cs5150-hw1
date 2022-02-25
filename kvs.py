@@ -40,7 +40,7 @@ if __name__ == '__main__':
     res = capi.get('/pcss_objects/obj_001')
     if res:
         odict = res.get_result()
-        print(bcolors.OK + f"Get is successful with details: {odict}" + bcolors.RESET)
+        print(bcolors.OK + f"Get is successful with details: {type(odict)}" + bcolors.RESET)
     else:
         print(bcolors.FAIL + "Something went wrong, get returns null." + bcolors.RESET)
         quit()
