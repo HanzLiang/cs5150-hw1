@@ -46,7 +46,7 @@ class Bank:
         else:
             print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
 
-        transaction={self.getMonth:[]}
+        transaction={self.getMonth():[]}
         res = self.capi.put('/transaction/{}'.format(bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
         if res:
             ver = res.get_result()
@@ -82,7 +82,7 @@ class Bank:
         odict = res.get_result()
         print(odict)
         transaction=json.loads(odict['value'].decode())
-        transaction[self.getMonth].append(bank_account_id+" deposit "+ str(money) +" in "+self.getTime())
+        transaction[self.getMonth()].append(bank_account_id+" deposit "+ str(money) +" in "+self.getTime())
         print(transaction)
         res = self.capi.put('/transaction/{}'.format(self.bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
 
