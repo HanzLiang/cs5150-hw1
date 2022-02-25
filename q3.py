@@ -98,23 +98,51 @@ class Bank:
     # bank_account_id: the account id
     # money: amount of money to withdraw
     def withdraw(self, bank_account_id, money):
+        # if money < 0:
+        #     return False
+        # if bank_account_id not in self.account:
+        #     return False
+        # account = self.account[bank_account_id]
+        # if account.balance >= money:
+        #     account.balance -= money
+            
+        #     month=self.getMonth()
+        #     if month not in self.transaction[bank_account_id]:
+        #         self.transaction[bank_account_id][month] = []       
+        #     self.transaction[bank_account_id][month].append(bank_account_id+" withdraw "+str(money)+" in "+self.getTime())
+            
+        #     return True
+
+        # else:
+        #     return False
+
         if money < 0:
             return False
-        if bank_account_id not in self.account:
-            return False
-        account = self.account[bank_account_id]
-        if account.balance >= money:
-            account.balance -= money
-            
-            month=self.getMonth()
-            if month not in self.transaction[bank_account_id]:
-                self.transaction[bank_account_id][month] = []       
-            self.transaction[bank_account_id][month].append(bank_account_id+" withdraw "+str(money)+" in "+self.getTime())
-            
-            return True
 
+        res = self.capi.get('/account/{}'.format(bank_account_id))
+        odict = res.get_result()
+        print(odict)
+        account = json.loads(odict['value'].decode())
+        account['balance']-= money
+        print(account)
+
+        res = self.capi.put('/account/{}'.format(bank_account_id),json.dumps(account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
         else:
-            return False
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
+        
+        # res = self.capi.get('/transaction/{}'.format(bank_account_id))
+        # odict = res.get_result()
+        # print(odict)
+        # transaction=json.loads(odict['value'].decode())
+        # transaction[self.getMonth()].append(bank_account_id+" withdraw "+ str(money) +" in "+self.getTime())
+        # print(transaction)
+        # res = self.capi.put('/transaction/{}'.format(bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+
+
+
 
     # Transfer: moves money from one account to another
     # parameter:
@@ -146,6 +174,8 @@ class Bank:
             return True
         else:
             return False
+
+            
     
     # Dashboard generates a report showing the customer’s current bank balance and the transactions for the current month.
     # parameter:
@@ -186,5 +216,5 @@ class bankAccount:
 
 B=Bank()
 res=B.new_account('111213','lhz','text_id_blanc','contact_info_blank','overdraft_limit','overdraft_intrRate',100)
-B.deposit('111213',100)
+B.withdraw('111213',100)
 
