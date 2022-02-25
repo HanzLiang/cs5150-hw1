@@ -1,12 +1,22 @@
 import time
 from collections import defaultdict
+import json
+from derecho.cascade.client import ServiceClientAPI
 
+
+class bcolors:
+    OK = '\033[92m' #GREEN
+    WARNING = '\033[93m' #YELLOW
+    FAIL = '\033[91m' #RED
+    RESET = '\033[0m' #RESET COLOR
 
 class Bank:
-    transaction = defaultdict(dict)
-    account = dict()
+    capi = ServiceClientAPI()
+    transaction = capi.create_object_pool("/transaction","VolatileCascadeStoreWithStringKey",0)
+    account = capi.create_object_pool("/account","VolatileCascadeStoreWithStringKey",0)
 
     def getAccount(self, bank_account_id):
+        res = self.capi.get('/account/obj_001')
         return self.account[bank_account_id]
 
     def getTime(self):
@@ -22,11 +32,24 @@ class Bank:
     # New_account creates a new account
     # parameter:
     # the meta-data to create an account
+    
     def new_account(self, bank_account_id, owner_name, text_id, contact_info, overdraft_limit, overdraft_intrRate, balance):
-        new_account = bankAccount(bank_account_id, owner_name, text_id,
-                                  contact_info, overdraft_limit, overdraft_intrRate, balance)
-        self.account[new_account.bank_account_id] = new_account
-        return bytes(new_account)
+        new_account={
+                'bank_account_id': bank_account_id,
+                'owner_name': owner_name,
+                'text_id': text_id,
+                'contact_info': contact_info,
+                'overdraft_limit': overdraft_limit,
+                'overdraft_intrRate': overdraft_intrRate,
+                'balance': str(balance)}     
+
+        res = self.capi.put('/account/{bank_account_id}',json.dumps(new_account).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        if res:
+            ver = res.get_result()
+            print(bcolors.OK + f"Put is successful with version {ver}." + bcolors.RESET)
+        else:
+            print(bcolors.FAIL + "Something went wrong, put returns null." + bcolors.RESET)
+
 
     # Deposit puts money into an account.
     # parameter:
@@ -140,4 +163,4 @@ class bankAccount:
 
 B=Bank()
 res=B.new_account('111213','lhz','text_id_blanc','contact_info_blank','overdraft_limit','overdraft_intrRate',100)
-print(res)
+
