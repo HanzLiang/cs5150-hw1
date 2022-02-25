@@ -84,7 +84,7 @@ class Bank:
         transaction=json.loads(odict['value'].decode())
         transaction[self.getMonth()].append(bank_account_id+" deposit "+ str(money) +" in "+self.getTime())
         print(transaction)
-        res = self.capi.put('/transaction/{}'.format(self.bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
+        res = self.capi.put('/transaction/{}'.format(bank_account_id),json.dumps(transaction).encode(),previous_version=ServiceClientAPI.CURRENT_VERSION,previous_version_by_key=ServiceClientAPI.CURRENT_VERSION)
 
         # month=self.getMonth()
         # if month not in self.transaction[bank_account_id]:
